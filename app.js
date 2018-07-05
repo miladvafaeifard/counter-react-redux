@@ -1,4 +1,10 @@
-const update = (state = { count: 0 }, action = {type: ''}) => {
+const mapStateToProps = state => state;
+const mapDispatchToProps = dispatch => ({
+   INCREASE: () => dispatch({type: 'UP'}),
+   DECREASE: () => dispatch({type: 'DOWN'}),
+});
+
+const update = (state = { count: 0 }, action = { type: '' }) => {
    switch(action.type) {
       case 'UP'   : return Object.assign({}, state, {count: state.count + 1});
       case 'DOWN' : return Object.assign({}, state, {count: state.count - 1});
@@ -6,27 +12,20 @@ const update = (state = { count: 0 }, action = {type: ''}) => {
    }
 };
 
-let container = Redux.createStore(update);
-
-const view = (m) => {
-   const Increase = () => { container.dispatch({type: 'UP'})};
-   const Decrease = () => { container.dispatch({type: 'DOWN'})};
+const Counter = ReactRedux.Connect(mapStateToProps, mapDispatchToProps)( props => {
    return (
       <div>
-         <p>{m.count}</p>
-         <button onClick={Increase}>UP</button>
-         <button onClick={Decrease}>DOWN</button>
+         <p>{props.count}</p>
+         <button onClick={props.INCREASE}>UP</button>
+         <button onClick={props.DECREASE}>DOWN</button>
       </div>
    )
 };
 
-const render = () => {
-   ReactDOM.render(
-      view(container.getState()),
-      document.getElementById('root')
-   );
-}
+ReactDOM.render(
+   <ReactRedux.Provider store={Redux.createStore(update)}>
+      <Counter />
+   </ReactRedux.Provider>,
+   document.getElementById('root')
+);
 
-container.subscribe(render);
-
-container.dispatch({type: ''});
